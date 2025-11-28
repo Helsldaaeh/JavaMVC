@@ -1,19 +1,30 @@
 package org.example.view;
 
 import org.example.controller.Controller;
+import org.example.model.Model;
+import org.example.observer.EventManager;
+import org.example.observer.EventType;
+import org.example.observer.ModelListenner;
 
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseMotionAdapter;
-import java.util.Observable;
-import java.util.Observer;
 import javax.swing.JPanel;
 
 
-public class MyPanel extends JPanel implements Observer {
+public class MyPanel extends JPanel {
     private final Controller controller;
+    private EventManager eventManager;
+    private static MyPanel myPanel;
+    public static synchronized MyPanel init(){
+        try {
+            return myPanel;
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
 
     public MyPanel(Controller controller) {
         this.controller = controller;
@@ -29,6 +40,7 @@ public class MyPanel extends JPanel implements Observer {
                 controller.getPointTwo(arg0.getPoint());
             }
         });
+        eventManager.subscribe(EventType.MODEL_CHANGGE, Model.init());
     }
 
     @Override
@@ -36,11 +48,6 @@ public class MyPanel extends JPanel implements Observer {
         super.paintComponent(g);
         Graphics2D g2 = (Graphics2D) g;
         controller.draw(g2);
-    }
-
-    @Override
-    public void update(Observable o, Object arg) {
-        repaint();
     }
 
 }
